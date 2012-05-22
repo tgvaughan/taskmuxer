@@ -4,7 +4,7 @@ import time
 import random
 from sys import argv,exit
 import os
-import SocketServer
+import BaseHTTPServer
 
 class TDL:
 
@@ -142,25 +142,38 @@ class Timer:
 
 
 
-class SchedTCPHandler(SocketServer.StreamRequestHandler):
+class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
-	usage = """Command		Description
---------------------------------------------------
-task		Get current task
-time		Get time remaining on current task
-next		Mark complete + move to next task
-pause		Pause task timer
-ispaused	Check state of task timer
-status		Print status summary
-reload		Re-read to-do list
-shuffle		Re-shuffle task list
-help		Print this help message
+	usage = """<html>
+<body>
+<h1>MuxMe v0.1</h1>
+<table>
+<tr><th>Command</th> <th>Description</th></tr>
+<tr><td>task</td><td>Get current task</td></tr>
+<tr><td>time</td><td>Get time remaining on current task</td></tr>
+<tr><td>next</td><td>Mark complete + move to next task</td></tr>
+<tr><td>pause</td><td>Pause task timer</td></tr>
+<tr><td>ispaused</td><td>Check state of task timer</td></tr>
+<tr><td>status</td><td>Print status summary</td></tr>
+<tr><td>reload</td><td>Re-read to-do list</td></tr>
+<tr><td>shuffle</td><td>Re-shuffle task list</td></tr>
+<tr><td>help</td><td>Print this help message</td></tr>
+</table>
+</body>
 """
+	def log_message(*args):
+		"""Turn off logging of server messages."""
+		return
 
-	def handle(self):
-		cmd = self.rfile.readline().strip().lower()
+	def write_headers(self):
+		self.send_response(200)
+		self.send_header("Content-type", "text/html")
+		self.end_headers()
 
-		if cmd=='task':
+	def do_GET(self):
+
+		if self.path=='/task':
+			self.write_headers()
 			task = schedule.getCurrentTask()
 			if task == None:
 				self.wfile.write('None\n')
@@ -168,23 +181,29 @@ help		Print this help message
 				self.wfile.write(task)
 			return
 
-		if cmd=='time':
+		if self.path=='/time':
+			self.write_headers()
 			self.wfile.write('{:d}\n'.format(int(schedule.getTimeRemaining())/60))
 			return
 
-		if cmd=='next':
+		if self.path=='/next':
 			schedule.markDone()
+			self.write_headers()
+			self.write('done.')
 			return
 
-		if cmd=='pause':
+		if self.path=='/pause':
 			schedule.pauseTimer()
+			self.write_headers()
+			self.write('done.')
 			return
 
-		if cmd=='ispaused':
+		if self.path=='/ispaused':
+			self.write_headers()
 			self.wfile.write('{}\n'.format(str(schedule.isPaused())))
 			return
 
-		if cmd=='status':
+		if self.path=='/status':
 			statStr = ''
 			task = schedule.getCurrentTask()
 			if task == None:
@@ -197,26 +216,34 @@ help		Print this help message
 			else:
 				statStr += '({:d} min)\n'.format(int(schedule.getTimeRemaining())/60)
 
+			self.write_headers()
 			self.wfile.write(statStr)
 			return
 
-		if cmd=='reload':
+		if self.path=='/reload':
 			schedule.rereadTDL()
+			self.write_headers()
+			self.write('done.')
 			return
 
-		if cmd=='shuffle':
+		if self.path=='/shuffle':
 			schedule.shuffle()
+			self.write_headers()
+			self.write('done.')
 			return
 
-		if cmd=='help':
+		if self.path=='/help':
+			self.write_headers()
 			self.wfile.write(self.usage)
 			return
+
+		self.send_error(404, "File not found")
 
 ### MAIN ###
 if __name__ == '__main__':
 
 	if len(argv) < 2:
-		print "Usage: {} schedule_file.txt [port]".format(argv[0])
+		print "Usage: {} todo.txt [port]".format(argv[0])
 		exit(0)
 	
 	if len(argv) >2:
@@ -228,5 +255,5 @@ if __name__ == '__main__':
 	schedule = Schedule(argv[1])
 	
 	# Fire up server:
-	server = SocketServer.TCPServer(("localhost",port), SchedTCPHandler)
+	server = BaseHTTPServer.HTTPServer(("localhost",port), RequestHandler)
 	server.serve_forever()
