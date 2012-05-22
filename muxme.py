@@ -232,7 +232,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 			self.write('done.')
 			return
 
-		if self.path=='/help':
+		if self.path=='/help' or self.path=='/':
 			self.write_headers()
 			self.wfile.write(self.usage)
 			return
