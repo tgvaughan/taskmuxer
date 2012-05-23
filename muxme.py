@@ -6,7 +6,7 @@ from sys import argv,exit
 import os
 import BaseHTTPServer
 
-class TDL:
+class ToDoList:
 
 	fname = None
 	data = {}
@@ -60,7 +60,7 @@ class Schedule:
 
 	def __init__(self, fname):
 
-		self.tdl = TDL(fname)
+		self.tdl = ToDoList(fname)
 		self.taskList = self.tdl.getTaskList()
 
 		random.shuffle(self.taskList)
@@ -186,18 +186,6 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 			self.wfile.write('{:d}\n'.format(int(schedule.getTimeRemaining())/60))
 			return
 
-		if self.path=='/next':
-			schedule.markDone()
-			self.write_headers()
-			self.write('done.')
-			return
-
-		if self.path=='/pause':
-			schedule.pauseTimer()
-			self.write_headers()
-			self.write('done.')
-			return
-
 		if self.path=='/ispaused':
 			self.write_headers()
 			self.wfile.write('{}\n'.format(str(schedule.isPaused())))
@@ -220,16 +208,31 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 			self.wfile.write(statStr)
 			return
 
+		if self.path=='/next':
+			schedule.markDone()
+			self.write_headers()
+			self.wfile.write('done.\n')
+			return
+
+		if self.path=='/pause':
+			schedule.pauseTimer()
+			self.write_headers()
+			if schedule.isPaused():
+				self.wfile.write('Timer paused.\n')
+			else:
+				self.wfile.write('Timer unpaused.\n')
+			return
+
 		if self.path=='/reload':
 			schedule.rereadTDL()
 			self.write_headers()
-			self.write('done.')
+			self.wfile.write('done.\n')
 			return
 
 		if self.path=='/shuffle':
 			schedule.shuffle()
 			self.write_headers()
-			self.write('done.')
+			self.wfile.write('done.\n')
 			return
 
 		if self.path=='/help' or self.path=='/':
@@ -237,7 +240,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 			self.wfile.write(self.usage)
 			return
 
-		self.send_error(404, "File not found")
+		self.send_error(404, "Invalid command. See /help for instructions")
 
 ### MAIN ###
 if __name__ == '__main__':
