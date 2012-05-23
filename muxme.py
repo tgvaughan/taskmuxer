@@ -147,8 +147,8 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 	usage = """<html>
 <body>
 <h1>MuxMe v0.1</h1>
-<table>
-<tr><th>Command</th> <th>Description</th></tr>
+<table border="1">
+<tr><th>Command</th><th>Description</th></tr>
 <tr><td>task</td><td>Get current task</td></tr>
 <tr><td>time</td><td>Get time remaining on current task</td></tr>
 <tr><td>next</td><td>Mark complete + move to next task</td></tr>
