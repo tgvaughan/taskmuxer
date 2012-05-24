@@ -9,10 +9,11 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 <tr><th>Command</th><th>Description</th></tr>
 <tr><td>task</td><td>Get current task</td></tr>
 <tr><td>time</td><td>Get time remaining on current task</td></tr>
+<tr><td>ispaused</td><td>Check state of task timer</td></tr>
+<tr><td>status</td><td>Status of current task</td></tr>
+<tr><td>tasklist</td><td>List of tasks in queue</td></tr>
 <tr><td>next</td><td>Mark complete + move to next task</td></tr>
 <tr><td>pause</td><td>Pause task timer</td></tr>
-<tr><td>ispaused</td><td>Check state of task timer</td></tr>
-<tr><td>status</td><td>Print status summary</td></tr>
 <tr><td>reload</td><td>Re-read to-do list</td></tr>
 <tr><td>shuffle</td><td>Re-shuffle task list</td></tr>
 <tr><td>help</td><td>Print this help message</td></tr>
@@ -41,12 +42,12 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 		if self.path=='/time':
 			self.write_headers()
-			self.wfile.write('{:d}\n'.format(int(schedule.getTimeRemaining())/60))
+			self.wfile.write('{:d}\n'.format(schedule.getTimeRemaining()))
 			return
 
 		if self.path=='/ispaused':
 			self.write_headers()
-			self.wfile.write('{}\n'.format(str(schedule.isPaused())))
+			self.wfile.write(str(schedule.isPaused()) + '\n')
 			return
 
 		if self.path=='/status':
@@ -60,10 +61,27 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 			if schedule.isPaused():
 				statStr += '[PAUSED]\n'
 			else:
-				statStr += '({:d} min)\n'.format(int(schedule.getTimeRemaining())/60)
+				statStr += '({:d} min)\n'.format(schedule.getTimeRemaining())
 
 			self.write_headers()
 			self.wfile.write(statStr)
+			return
+
+		if self.path=='/tasklist':
+			self.write_headers()
+			self.wfile.write('<html><body>\n');
+			self.wfile.write('<h2>Current task list</h2>\n')
+			self.wfile.write('<ol>\n')
+			for task in schedule.taskList:
+				if task == schedule.getCurrentTask():
+					self.wfile.write('<li><b>'+task+'</b>')
+					self.wfile.write(' (remaining: ')
+					self.wfile.write(str(schedule.getTimeRemaining()))
+					self.wfile.write('min)</li>\n')
+				else:
+					self.wfile.write('<li>' + task + '</li>\n')
+			self.wfile.write('</ol>\n')
+			self.wfile.write('</body></html>\n')
 			return
 
 		if self.path=='/next':

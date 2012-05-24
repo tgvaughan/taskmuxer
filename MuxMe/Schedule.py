@@ -39,7 +39,7 @@ class Schedule:
 		return self.taskList[idx]
 
 	def getTimeRemaining(self):
-		return 3600-self.timer.getElapsed()%3600
+		return int((3600-self.timer.getElapsed()%3600)/60)
 
 	def markDone(self):
 		if len(self.taskList)==0:
