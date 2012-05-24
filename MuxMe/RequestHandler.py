@@ -7,16 +7,16 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 <h1>MuxMe v0.1</h1>
 <table border="1">
 <tr><th>Command</th><th>Description</th></tr>
-<tr><td>task</td><td>Get current task</td></tr>
-<tr><td>time</td><td>Get time remaining on current task</td></tr>
-<tr><td>ispaused</td><td>Check state of task timer</td></tr>
-<tr><td>status</td><td>Status of current task</td></tr>
-<tr><td>tasklist</td><td>List of tasks in queue</td></tr>
-<tr><td>next</td><td>Mark complete + move to next task</td></tr>
-<tr><td>pause</td><td>Pause task timer</td></tr>
-<tr><td>reload</td><td>Re-read to-do list</td></tr>
-<tr><td>shuffle</td><td>Re-shuffle task list</td></tr>
-<tr><td>help</td><td>Print this help message</td></tr>
+<tr><td><a href="/task">task</a></td><td>Get current task</td></tr>
+<tr><td><a href="/time">time</a></td><td>Get time remaining on current task</td></tr>
+<tr><td><a href="/ispaused">ispaused</a></td><td>Check state of task timer</td></tr>
+<tr><td><a href="/status">status</a></td><td>Status of current task</td></tr>
+<tr><td><a href="/tasklist">tasklist</a></td><td>List of tasks in queue</td></tr>
+<tr><td><a href="/next">next</a></td><td>Mark complete + move to next task</td></tr>
+<tr><td><a href="/pause">pause</a></td><td>Pause task timer</td></tr>
+<tr><td><a href="/reload">reload</a></td><td>Re-read to-do list</td></tr>
+<tr><td><a href="/shuffle">shuffle</a></td><td>Re-shuffle task list</td></tr>
+<tr><td><a href="/help">help</a></td><td>Print this help message</td></tr>
 </table>
 </body>
 """
