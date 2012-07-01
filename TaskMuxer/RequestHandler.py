@@ -4,7 +4,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 	usage = """<html>
 <body>
-<h1>MuxMe v0.1</h1>
+<h1>TaskMuxer v0.1</h1>
 <table border="1">
 <tr><th>Command</th><th>Description</th></tr>
 <tr><td><a href="/task">task</a></td><td>Get current task</td></tr>

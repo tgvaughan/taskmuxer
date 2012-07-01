@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from MuxMe import Schedule
-from MuxMe import RequestHandler
+from TaskMuxer import Schedule
+from TaskMuxer import RequestHandler
 from sys import argv,exit
 import BaseHTTPServer
 
